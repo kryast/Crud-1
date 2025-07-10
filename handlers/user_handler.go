@@ -61,3 +61,13 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, user)
 }
+
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := h.service.DeleteUser(uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
+}
