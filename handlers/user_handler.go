@@ -45,3 +45,19 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, user)
 }
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user.ID = uint(id)
+	err := h.service.UpdateUser(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
