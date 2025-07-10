@@ -1,10 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/kryast/Crud-1.git/database"
+	"github.com/kryast/Crud-1.git/handlers"
+	"github.com/kryast/Crud-1.git/models"
+	"github.com/kryast/Crud-1.git/repositories"
+	"github.com/kryast/Crud-1.git/routers"
+	"github.com/kryast/Crud-1.git/services"
 )
 
 func main() {
@@ -13,15 +17,12 @@ func main() {
 		log.Fatalf("Gagal koneksi ke database: %v", err)
 	}
 
-	sqlDB, err := db.DB()
-	if err != nil {
-		log.Fatalf("Gagal mendapatkan koneksi DB: %v", err)
-	}
+	db.AutoMigrate(&models.User{})
 
-	err = sqlDB.Ping()
-	if err != nil {
-		log.Fatalf("Database tidak merespon: %v", err)
-	}
+	userRepo := repositories.NewUserRepository(db)
+	userService := services.NewUserService(userRepo)
+	userHandler := handlers.NewUserHandler(userService)
 
-	fmt.Println("Koneksi ke database berhasil")
+	r := routers.SetupRouter(userHandler)
+	r.Run(":8080")
 }
