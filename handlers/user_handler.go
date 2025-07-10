@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kryast/Crud-1.git/models"
@@ -28,4 +29,19 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, user)
+}
+
+func (h *UserHandler) GetUsers(c *gin.Context) {
+	users, _ := h.service.GetUsers()
+	c.JSON(http.StatusOK, users)
+}
+
+func (h *UserHandler) GetUser(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	user, err := h.service.GetUserByID(uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
